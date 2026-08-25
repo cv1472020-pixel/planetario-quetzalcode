@@ -1585,6 +1585,26 @@ body{background:var(--bg);color:#fff;font-family:'Exo 2',sans-serif;overflow:hid
 </div>
 <script>
 (function(){
+  // ── Conexión con Google Sheet (Apps Script Web App) ──
+  // Guarda el nombre del login y los nombres de galaxia elegidos/creados.
+  // El envío es "fire and forget": no bloquea la experiencia si falla o tarda.
+  var SHEET_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbx01PJfBe930SFk3xW6i6u1NU8NbvnD3W3VtVDAYwnEWZ8OGImJGVfdIkqdm15PBGKyhA/exec';
+  window.sendToSheet = function(payload){
+    try{
+      var body = JSON.stringify(Object.assign({fecha:new Date().toISOString()}, payload));
+      if(navigator.sendBeacon){
+        var blob = new Blob([body], {type:'text/plain;charset=UTF-8'});
+        navigator.sendBeacon(SHEET_WEBAPP_URL, blob);
+      } else {
+        fetch(SHEET_WEBAPP_URL, {method:'POST', mode:'no-cors', body:body})
+          .catch(function(e){ console.warn('No se pudo registrar en la hoja:', e); });
+      }
+    }catch(e){ console.warn('No se pudo registrar en la hoja:', e); }
+  };
+})();
+</script>
+<script>
+(function(){
   function escapeHtml(str){
     const div=document.createElement('div');
     div.textContent=str;
@@ -1594,6 +1614,7 @@ body{background:var(--bg);color:#fff;font-family:'Exo 2',sans-serif;overflow:hid
     const inp=document.getElementById('login-name-input');
     let name=(inp?inp.value.trim():'')||'Explorador';
     name=name.slice(0,24);
+    if(window.sendToSheet) window.sendToSheet({tipo:'login', nombre:name});
     const card=document.getElementById('login-card');
     const welcome=document.getElementById('login-welcome');
     const welcomeText=document.getElementById('login-welcome-text');
@@ -9499,6 +9520,12 @@ function setGalaxyBtnMode(mode){
 
 function enterGalaxy(id){
   currentGalaxyId=id;
+  const cfg=GALAXIES.find(g=>g.id===id);
+  // Si es una galaxia predefinida (no editable), registramos su nombre de una vez.
+  // Si es "Nombra tu galaxia", el nombre se registra al confirmar el viaje (startGalaxyTravel).
+  if(cfg && cfg.nameable===false && window.sendToSheet){
+    window.sendToSheet({tipo:'galaxia', nombre:cfg.name, galaxiaId:cfg.id});
+  }
   closeGalaxySelectPanel();
   openGalaxyPanel();
 }
@@ -9931,6 +9958,9 @@ function startGalaxyTravel(){
   const inp=document.getElementById('gal-name-input');
   const val=(cfg.nameable!==false && inp)?inp.value.trim():'';
   galCustomName=val?val.toUpperCase():'';
+  if(cfg.nameable!==false && window.sendToSheet){
+    window.sendToSheet({tipo:'galaxia', nombre:galCustomName||'Sin nombre', galaxiaId:cfg.id});
+  }
   galIsTraveling=true;
   const ui=document.getElementById('gal-ui');
   if(ui){ui.style.opacity='0';setTimeout(()=>{ui.style.pointerEvents='none';ui.style.display='none';},1500);}
