@@ -2,14 +2,18 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#020408">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>COSMOS — Planetario Interactivo</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 :root{
-  --gold:#FFD700;--blue:#4FC3F7;--purple:#CE93D8;--red:#FF7043;
-  --teal:#4DD0E1;--orange:#FFA726;--pink:#F48FB1;--green:#A5D6A7;
+  --gold:#00ff0d;--blue:#4FC3F7;--purple:#5c2b64;--red:#FF7043;
+  --teal:#0f0f0f;--orange:#FFA726;--pink:#F48FB1;--green:#A5D6A7;
   --bg:#020408;--panel:#0a0f1a;--border:rgba(79,195,247,0.2);
 }
 body{background:var(--bg);color:#fff;font-family:'Exo 2',sans-serif;overflow:hidden;height:100vh;}
@@ -1565,6 +1569,124 @@ body{background:var(--bg);color:#fff;font-family:'Exo 2',sans-serif;overflow:hid
   #login-enter-btn{padding:12px 34px;font-size:0.85rem;}
 }
 
+
+/* ═══════════════════════════════════════════════════════════════
+   AJUSTES UNIVERSALES — PC · ANDROID · iPHONE
+   (se carga al final para complementar las reglas anteriores)
+   ═══════════════════════════════════════════════════════════════ */
+html{ -webkit-text-size-adjust:100%; text-size-adjust:100%; overscroll-behavior:none; }
+/* 100vh en iPhone/Android incluye la barra del navegador → usar dvh */
+body{ height:100vh; height:100dvh; overscroll-behavior:none; -webkit-tap-highlight-color:transparent; }
+/* Quita el retraso/zoom por doble toque en todo lo que se pulsa */
+button,[onclick],.planet-btn,.speed-btn,.toggle-btn,.action-btn,.k-tab,.pdv-nav-item,
+.galaxy-option-btn,.ms-pcard,#login-enter-btn,#share-btn,#close-btn{
+  touch-action:manipulation; -webkit-tap-highlight-color:transparent;
+}
+/* BUG: faltaban espacios alrededor del "+" dentro de max(), el navegador ignoraba
+   toda la regla y la barra de planetas quedaba sin posición en PC */
+#planet-nav{
+  bottom:max(30px,calc(env(safe-area-inset-bottom,0px) + 16px));
+  max-width:calc(100vw - 24px - env(safe-area-inset-left,0px) - env(safe-area-inset-right,0px));
+}
+/* Zona segura (notch / isla dinámica / barra de gestos) */
+#header{
+  padding-top:max(16px,env(safe-area-inset-top,0px));
+  padding-left:max(24px,env(safe-area-inset-left,0px));
+  padding-right:max(24px,env(safe-area-inset-right,0px));
+}
+#info-panel{ padding-right:env(safe-area-inset-right,0px); }
+.lb-img-wrap{ max-height:78vh; max-height:78dvh; }
+.lb-img-wrap img{ max-height:70vh; max-height:70dvh; }
+#galaxy-select-inner{ max-height:82vh; max-height:82dvh; }
+
+/* iOS hace zoom automático al enfocar un campo con letra < 16px */
+@media (hover:none) and (pointer:coarse){
+  input,textarea,select{ font-size:16px; }
+  #login-name-input,#gal-name-input{ font-size:16px !important; }
+  #ui,#ui *,#surface-ui,#surface-ui *{ -webkit-user-select:none; user-select:none; -webkit-touch-callout:none; }
+  input,textarea{ -webkit-user-select:text; user-select:text; }
+}
+
+/* Pantalla de entrada: que nunca quede cortada (teclado / pantallas bajas) */
+#login-gate{ overflow-y:auto; -webkit-overflow-scrolling:touch; align-items:flex-start; }
+#login-card{ margin:auto; }
+
+/* ── Tablet vertical / móvil grande ── */
+@media (max-width:900px){
+  #photo-panel{ max-width:100vw; }
+}
+
+/* ── Móvil vertical (≤600px) ── */
+@media (max-width:600px){
+  #header{
+    padding-top:max(12px,env(safe-area-inset-top,0px));
+    padding-left:max(16px,env(safe-area-inset-left,0px));
+    padding-right:max(16px,env(safe-area-inset-right,0px));
+  }
+  #info-panel{
+    max-height:80vh; max-height:80dvh;
+    padding-bottom:env(safe-area-inset-bottom,0px);
+  }
+  #planet-nav{ bottom:calc(14px + env(safe-area-inset-bottom,0px)); }
+  #controls{
+    bottom:calc(80px + env(safe-area-inset-bottom,0px));
+    left:max(12px,env(safe-area-inset-left,0px));
+  }
+  #hint{ bottom:calc(72px + env(safe-area-inset-bottom,0px)); }
+  #avatar-container{ bottom:calc(80px + env(safe-area-inset-bottom,0px)); }
+  #follow-badge{ top:calc(60px + env(safe-area-inset-top,0px)); }
+  #photo-panel{ height:60vh; height:60dvh; padding-bottom:env(safe-area-inset-bottom,0px); }
+  #galaxy-select-inner{ max-height:78vh; max-height:78dvh; }
+  #surface-header{ padding-top:calc(10px + env(safe-area-inset-top,0px)) !important; }
+  #surface-info-bar{ padding-bottom:calc(12px + env(safe-area-inset-bottom,0px)); }
+  #life-header{ padding-top:calc(14px + env(safe-area-inset-top,0px)); }
+  #rover-btn,#mercury-btn,#saturn-btn,#fish-play-btn,#aquarium-btn,#venus-btn,#jupiter-btn,#urano-btn{
+    bottom:calc(70px + env(safe-area-inset-bottom,0px)) !important;
+  }
+  #fs-joystick{ bottom:calc(18px + env(safe-area-inset-bottom,0px)) !important; }
+  #fs-dash-btn,#fs-turbo-btn{ bottom:calc(70px + env(safe-area-inset-bottom,0px)) !important; }
+  #mc-shoot-btn{ bottom:calc(30px + env(safe-area-inset-bottom,0px)) !important; }
+}
+
+/* ── Móvil horizontal (pantallas bajas): aprovechar cada píxel de alto ── */
+@media (max-height:500px) and (orientation:landscape){
+  #header{ padding-bottom:6px; padding-top:max(8px,env(safe-area-inset-top,0px)); }
+  #logo{ font-size:18px; letter-spacing:3px; }
+  #logo span,#header-hint,#hint{ display:none; }
+  #planet-nav{ bottom:max(10px,env(safe-area-inset-bottom,0px)); padding:6px 12px; }
+  .planet-btn{ width:32px; height:32px; }
+  .planet-btn::after{ display:none; }
+  #controls{
+    top:56px; padding:10px; gap:6px;
+    max-height:calc(100vh - 120px); max-height:calc(100dvh - 120px);
+    overflow-y:auto; -webkit-overflow-scrolling:touch;
+  }
+  #follow-badge{ top:52px; padding:7px 16px; }
+  .panel-hero{ height:110px; }
+  .planet-name{ font-size:22px; }
+  .panel-content{ padding:16px; }
+  #avatar-container{ bottom:64px; }
+  #surface-header{
+    padding:8px max(16px,env(safe-area-inset-right,0px)) 8px max(16px,env(safe-area-inset-left,0px));
+  }
+  #surface-info-bar{
+    padding:8px max(16px,env(safe-area-inset-right,0px)) max(8px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));
+    gap:16px; flex-wrap:wrap;
+  }
+  #life-header{ padding:8px max(16px,env(safe-area-inset-right,0px)) 6px max(16px,env(safe-area-inset-left,0px)); }
+  #login-logo{ width:52px; }
+  #login-card{ gap:8px; padding:12px; }
+  #login-brand{ font-size:20px; margin-top:0; }
+  #login-title{ margin-top:2px; }
+  #login-tagline{ margin-bottom:2px; }
+  #login-footer{ display:none; }
+}
+
+/* Pantallas muy grandes (TV / monitores 2K-4K) */
+@media (min-width:1800px){
+  #info-panel{ width:440px; }
+  .planet-name{ font-size:32px; }
+}
 </style>
 </head>
 <body>
@@ -1647,7 +1769,7 @@ body{background:var(--bg);color:#fff;font-family:'Exo 2',sans-serif;overflow:hid
   const inp=document.getElementById('login-name-input');
   if(inp){
     inp.addEventListener('keydown',function(e){ if(e.key==='Enter') window.loginEnter(); });
-    setTimeout(function(){ inp.focus(); },400);
+    if(!(window.matchMedia && window.matchMedia('(pointer:coarse)').matches)) setTimeout(function(){ inp.focus(); },400);
   }
 })();
 </script>
@@ -3526,6 +3648,78 @@ const PLANETS = [
         ctx.fillStyle=vig;ctx.fillRect(0,0,W,H);
       }
     }
+  },
+  {
+    id:'pluton',name:'Plutón',subtitle:'El Planeta Enano',color:'#D7C4A3',glow:'#8D6E63',
+    radius:6,type:'planet',orbitRadius:1300,speed:0.00025,angle:2.1,
+    gradient:['#FDF6E3','#D7C4A3','#8D6E63','#3E2723'],
+    stats:{diametro:'2,377 km',masa:'1.31 × 10²² kg',temperatura:'-229 °C',orbita:'248 años'},
+    desc:'Plutón fue considerado el noveno planeta desde 1930 hasta 2006, cuando la Unión Astronómica Internacional lo reclasificó como planeta enano. Su gran corazón helado de nitrógeno, Tombaugh Regio, fue revelado por la sonda New Horizons en 2015.',
+    facts:['Su luna Caronte es tan grande que ambos orbitan un centro de masa fuera de Plutón','Un día en Plutón dura 6.4 días terrestres, igual que la órbita de Caronte','New Horizons fue la primera y única sonda en visitarlo, en julio de 2015','Tiene montañas de hielo de agua de hasta 3,500 metros de altura','Su atmósfera de nitrógeno se congela y cae como nieve cuando se aleja del Sol'],
+    moons:['Caronte','Nix','Hidra','Cerbero','Estigia'],accent:'#A1887F',orbitColor:'rgba(161,136,127,0.22)',
+    surface:{temp:'-229 °C',atm:'N₂ tenue (congelada)',grav:'0.62 m/s²',cond:'Hielo de nitrógeno y montañas de agua helada',
+      draw:(ctx,W,H,t)=>{
+        const S=Math.min(W,H);const sc=S/500;
+        // Black starfield sky — Plutón está muy lejos del Sol
+        ctx.fillStyle='#000000';ctx.fillRect(0,0,W,H*.55);
+        for(let i=0;i<140;i++){
+          const sx=(Math.sin(i*73.1)*.5+.5)*W;const sy=(Math.cos(i*37.3)*.5+.5)*H*.52;
+          const sa=.25+.55*Math.abs(Math.sin(i+t*.2));
+          ctx.beginPath();ctx.arc(sx,sy,(.5+.7*(i%3===0?1:.4))*sc,0,Math.PI*2);
+          ctx.fillStyle=`rgba(255,255,255,${sa})`;ctx.fill();
+        }
+        // El Sol — apenas un punto brillante y lejano
+        const sunX=W*.14,sunY=H*.12;
+        const sg=ctx.createRadialGradient(sunX,sunY,0,sunX,sunY,14*sc);
+        sg.addColorStop(0,'rgba(255,255,240,.95)');sg.addColorStop(1,'transparent');
+        ctx.beginPath();ctx.arc(sunX,sunY,14*sc,0,Math.PI*2);ctx.fillStyle=sg;ctx.fill();
+        ctx.beginPath();ctx.arc(sunX,sunY,2.4*sc,0,Math.PI*2);ctx.fillStyle='#fffde7';ctx.fill();
+        // Caronte — su luna gigante, tidally locked, siempre en el mismo lugar del cielo
+        const chX=W*.72,chY=H*.24;
+        const chG=ctx.createRadialGradient(chX-6*sc,chY-6*sc,0,chX,chY,42*sc);
+        chG.addColorStop(0,'#efe6da');chG.addColorStop(.55,'#b9ab9a');chG.addColorStop(1,'#7d6f5f');
+        ctx.beginPath();ctx.arc(chX,chY,42*sc,0,Math.PI*2);ctx.fillStyle=chG;ctx.fill();
+        // cráteres tenues en Caronte
+        [[.35,.4,7],[.6,.6,5],[.25,.65,4]].forEach(([fx,fy,fr])=>{
+          ctx.beginPath();ctx.arc(chX+(fx-.5)*70*sc,chY+(fy-.5)*70*sc,fr*sc,0,Math.PI*2);
+          ctx.fillStyle='rgba(90,80,70,.35)';ctx.fill();
+        });
+        // Horizonte
+        const hg=ctx.createLinearGradient(0,H*.5,0,H*.58);
+        hg.addColorStop(0,'transparent');hg.addColorStop(1,'rgba(180,150,120,.25)');
+        ctx.fillStyle=hg;ctx.fillRect(0,H*.5,W,H*.08);
+        // Superficie helada, tonos tierra/tan de nitrógeno congelado
+        const gnd=ctx.createLinearGradient(0,H*.55,0,H);
+        gnd.addColorStop(0,'#c9a876');gnd.addColorStop(.35,'#a9895f');gnd.addColorStop(.7,'#6f5a3f');gnd.addColorStop(1,'#3a2e20');
+        ctx.fillStyle=gnd;ctx.fillRect(0,H*.55,W,H*.45);
+        // Montañas de hielo de agua en el horizonte
+        ctx.beginPath();ctx.moveTo(0,H*.55);
+        for(let x=0;x<=W;x+=10){
+          ctx.lineTo(x,H*.55-(10+18*Math.abs(Math.sin(x*.012+1.3)))*sc);
+        }
+        ctx.lineTo(W,H*.55);ctx.closePath();
+        ctx.fillStyle='rgba(230,220,205,.5)';ctx.fill();
+        // Tombaugh Regio — el gran "corazón" de nitrógeno congelado
+        const hx=W*.5,hy=H*.78,hs=60*sc;
+        ctx.save();ctx.translate(hx,hy);ctx.scale(hs/50,hs/50);
+        ctx.beginPath();
+        ctx.moveTo(0,-10);
+        ctx.bezierCurveTo(-25,-40,-60,-15,0,30);
+        ctx.bezierCurveTo(60,-15,25,-40,0,-10);
+        ctx.closePath();
+        const heartG=ctx.createRadialGradient(0,0,0,0,0,55);
+        heartG.addColorStop(0,'#fdf6e3');heartG.addColorStop(1,'#e6d3ab');
+        ctx.fillStyle=heartG;ctx.fill();
+        ctx.restore();
+        // Textura poligonal sutil sobre el hielo (celdas de convección de nitrógeno)
+        for(let i=0;i<14;i++){
+          const cx=hx+(Math.sin(i*2.1)*.5)*90*sc;
+          const cy=hy+(Math.cos(i*1.7)*.35)*40*sc;
+          ctx.beginPath();ctx.arc(cx,cy,10*sc,0,Math.PI*2);
+          ctx.strokeStyle='rgba(160,140,110,.25)';ctx.lineWidth=1*sc;ctx.stroke();
+        }
+      }
+    }
   }
 ];
 
@@ -4155,7 +4349,7 @@ function enterSurface(id){
 
   const avatarEmojis = {
     sol:'☀️', mercurio:'🪨', venus:'🌋', tierra:'🌿',
-    marte:'🔴', jupiter:'⚡', saturno:'💫', urano:'❄️', neptuno:'🌊'
+    marte:'🔴', jupiter:'⚡', saturno:'💫', urano:'❄️', neptuno:'🌊', pluton:'🤍'
   };
   avatarBody.textContent = avatarEmojis[p.id] || '🧑‍🚀';
   avatarWelcome.textContent = `¡Bienvenido a ${p.name}!`;
@@ -4699,11 +4893,12 @@ const PDV_EXTRA = {
   saturno:  { type:'Gaseoso',    dist:'1,432 M km',  day:'10.7 h',    year:'29.5 años',  temp:'-178 °C',    moons:146,atm:[['H₂',96,'#FFECB3'],['He',3,'#F9A825'],['Otros',1,'#E65100']] },
   urano:    { type:'Helado',     dist:'2,867 M km',  day:'17.2 h',    year:'84 años',    temp:'-224 °C',    moons:27, atm:[['H₂',83,'#B2EBF2'],['He',15,'#00ACC1'],['CH₄',2,'#006064']] },
   neptuno:  { type:'Helado',     dist:'4,515 M km',  day:'16.1 h',    year:'165 años',   temp:'-214 °C',    moons:16, atm:[['H₂',80,'#90CAF9'],['He',19,'#1565C0'],['CH₄',1,'#0D47A1']] },
+  pluton:   { type:'Enano',      dist:'5,906 M km',  day:'6.4 días',  year:'248 años',   temp:'-229 °C',    moons:5,  atm:[['N₂',90,'#D7C4A3'],['CH₄',9,'#8D6E63'],['CO',1,'#3E2723']] },
 };
 
 const PDV_ICONS = {
   sol:'☀️', mercurio:'🪨', venus:'🌋', tierra:'🌍', marte:'🔴',
-  jupiter:'🌀', saturno:'💫', urano:'❄️', neptuno:'🌊'
+  jupiter:'🌀', saturno:'💫', urano:'❄️', neptuno:'🌊', pluton:'🤍'
 };
 
 let pdvCurrentId = null;
@@ -5288,6 +5483,7 @@ var PL = [
   {id:'saturno',  n:'Saturno',  d:'1.2B km', emoji:'♄', c:'#e0d080', a:'#a09040', b:'#f0e090'},
   {id:'urano',    n:'Urano',    d:'2.6B km', emoji:'⛢', c:'#60e0e0', a:'#208080', b:'#80f0f0'},
   {id:'neptuno',  n:'Neptuno',  d:'4.3B km', emoji:'♆', c:'#3050e0', a:'#102090', b:'#4070ff'},
+  {id:'pluton',   n:'Plutón',   d:'5.9B km', emoji:'♇', c:'#c9a876', a:'#6f5a3f', b:'#e6d3ab'},
   {id:'sol',      n:'Sol',      d:'150M km', emoji:'☀', c:'#FFD700', a:'#FF6000', b:'#FFEE00'},
 ];
 
@@ -10033,5 +10229,12 @@ window.addEventListener('resize',()=>{
 
 </script>
 
+<script>
+(function(){
+  ['gesturestart','gesturechange','gestureend'].forEach(function(ev){
+    document.addEventListener(ev,function(e){ e.preventDefault(); },{passive:false});
+  });
+})();
+</script>
 </body>
 </html>
